@@ -1,0 +1,525 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Entre Nubes · Alojamientos en San José del Pacífico</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --pine:#2d5a3d;
+  --pine-d:#1e3d28;
+  --moss:#4a7c59;
+  --sage:#8aa88f;
+  --mint:#e6efe8;
+  --cream:#fafaf5;
+  --sand:#e8e2d4;
+  --ink:#1a2e20;
+  --muted:#6b7a6f;
+  --line:#e2e8de;
+  --soft:#f2f5ee;
+
+  --ease:cubic-bezier(.2,0,0,1);
+  --shadow-sm:0 1px 2px rgba(30,61,40,.06);
+  --shadow-md:0 4px 12px rgba(30,61,40,.10);
+  --shadow-lg:0 8px 28px rgba(30,61,40,.16);
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  font-size:15px;line-height:1.45;color:var(--ink);
+  background:var(--cream);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:0;padding:0}
+a{color:inherit;text-decoration:none}
+img{display:block;max-width:100%}
+:focus-visible{outline:2px solid var(--pine);outline-offset:2px;border-radius:6px}
+
+/* ---------- NAV ---------- */
+.nav{
+  height:80px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 5%;position:sticky;top:0;z-index:60;
+  background:rgba(250,250,245,.85);
+  backdrop-filter:saturate(180%) blur(16px);
+  -webkit-backdrop-filter:saturate(180%) blur(16px);
+  border-bottom:1px solid var(--line);
+}
+.logo{
+  font:700 22px/1 Montserrat,sans-serif;color:var(--pine);
+  letter-spacing:-.4px;
+  display:inline-flex;align-items:center;gap:8px;
+  transition:transform .3s var(--ease);
+}
+.logo:hover{transform:translateY(-1px)}
+.logo svg{width:22px;height:22px;color:var(--pine)}
+.nav-actions{display:flex;align-items:center;gap:8px}
+.pill{
+  display:inline-flex;align-items:center;gap:8px;
+  border:1px solid var(--line);border-radius:999px;
+  padding:10px 14px;font-size:13px;font-weight:500;
+  background:rgba(255,255,255,.9);
+  transition:box-shadow .25s var(--ease),border-color .25s var(--ease),
+             transform .25s var(--ease),background .25s var(--ease);
+}
+.pill:hover{box-shadow:var(--shadow-md);border-color:var(--sage);background:#fff}
+.pill:active{transform:scale(.96)}
+.pill svg{width:16px;height:16px;opacity:.85}
+
+/* ---------- SEARCH ---------- */
+.search-wrap{
+  padding:28px 5% 14px;
+  display:flex;flex-direction:column;align-items:center;gap:14px;
+}
+.search-context{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:13px;color:var(--muted);
+  padding:6px 14px;border-radius:999px;
+  background:var(--mint);
+  transition:background .25s var(--ease);
+}
+.search-context svg{width:14px;height:14px;color:var(--pine);flex:0 0 14px}
+.search-context b{color:var(--pine);font-weight:600}
+.search{
+  width:100%;max-width:780px;background:#fff;
+  border:1px solid var(--line);border-radius:999px;
+  display:flex;align-items:center;
+  transition:box-shadow .3s var(--ease),border-color .3s var(--ease);
+}
+.search:hover{box-shadow:var(--shadow-md);border-color:var(--sage)}
+.field{
+  position:relative;flex:1 1 0;min-width:0;
+  padding:13px 22px;border-radius:999px;
+  transition:background .25s var(--ease);
+  cursor:pointer;
+}
+.field:hover{background:var(--soft)}
+.field:not(:first-child)::before{
+  content:"";position:absolute;left:0;top:50%;transform:translateY(-50%);
+  width:1px;height:30px;background:var(--line);
+  transition:opacity .2s var(--ease);
+}
+.field:hover::before,
+.field:hover + .field::before{opacity:0}
+.field label{
+  display:block;font-size:11px;font-weight:700;letter-spacing:.05em;
+  text-transform:uppercase;margin-bottom:2px;color:var(--ink);
+}
+.field input,.field select{
+  border:0;outline:0;background:transparent;width:100%;
+  font-size:14px;font-weight:500;color:var(--muted);padding:0;
+  text-overflow:ellipsis;
+}
+.field select{
+  appearance:none;-webkit-appearance:none;cursor:pointer;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path d='M1 1l4 4 4-4' fill='none' stroke='%231a2e20' stroke-width='1.5' stroke-linecap='round'/></svg>");
+  background-repeat:no-repeat;background-position:right 2px center;
+  padding-right:18px;
+}
+.search-btn{
+  flex:0 0 auto;width:48px;height:48px;margin:6px 6px 6px 0;
+  border-radius:50%;background:var(--pine);color:#fff;
+  display:grid;place-items:center;
+  transition:background .25s var(--ease),transform .25s var(--ease),box-shadow .25s var(--ease);
+}
+.search-btn svg{width:17px;height:17px}
+.search-btn:hover{background:var(--pine-d);box-shadow:0 4px 14px rgba(45,90,61,.45)}
+.search-btn:active{transform:scale(.92)}
+
+/* ---------- FILTERS ---------- */
+.filters{
+  display:flex;gap:10px;overflow-x:auto;
+  padding:8px 5% 18px;border-bottom:1px solid var(--line);
+  scrollbar-width:none;-ms-overflow-style:none;
+  scroll-snap-type:x proximity;
+}
+.filters::-webkit-scrollbar{display:none}
+.chip{
+  flex:0 0 auto;scroll-snap-align:start;
+  display:inline-flex;align-items:center;gap:7px;
+  white-space:nowrap;background:#fff;
+  border:1px solid var(--line);border-radius:999px;
+  padding:9px 15px;font-size:13px;font-weight:500;
+  transition:border-color .25s var(--ease),box-shadow .25s var(--ease),
+             transform .25s var(--ease),background .25s var(--ease),color .25s var(--ease);
+}
+.chip svg{width:15px;height:15px;opacity:.7;transition:opacity .25s var(--ease),color .25s var(--ease)}
+.chip:hover{
+  border-color:var(--pine);color:var(--pine);
+  box-shadow:var(--shadow-sm);transform:translateY(-1px);
+}
+.chip:hover svg{opacity:1;color:var(--pine)}
+.chip:active{transform:scale(.97);background:var(--mint)}
+
+/* ---------- LAYOUT ---------- */
+.layout{
+  display:grid;grid-template-columns:1fr 42%;gap:28px;
+  padding:28px 5% 40px;
+}
+.section-title{
+  font:600 22px/1.2 Montserrat,sans-serif;letter-spacing:-.3px;
+  margin:0 0 6px;
+}
+.section-title .dot{color:var(--pine);margin-right:6px}
+.meta{color:var(--muted);font-size:14px;margin:4px 0}
+.region-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--mint);color:var(--pine);
+  padding:5px 12px;border-radius:999px;
+  font-size:12px;font-weight:600;letter-spacing:.02em;
+  margin-left:8px;vertical-align:middle;
+}
+.region-badge svg{width:12px;height:12px}
+
+/* ---------- CARDS ---------- */
+.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:26px 22px;margin-top:20px}
+.card{min-width:0;display:block;border-radius:14px}
+.photo{
+  position:relative;height:245px;border-radius:14px;overflow:hidden;
+  background:var(--soft);
+  transition:box-shadow .35s var(--ease);
+}
+.photo img{
+  width:100%;height:100%;object-fit:cover;
+  transition:transform .7s var(--ease);
+  will-change:transform;
+}
+.card:hover .photo img{transform:scale(1.06)}
+.card:hover .photo{box-shadow:var(--shadow-md)}
+.photo::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(180deg,rgba(30,61,40,.12),transparent 30%);
+  opacity:0;transition:opacity .35s var(--ease);
+}
+.card:hover .photo::after{opacity:1}
+
+.tag{
+  position:absolute;left:12px;top:12px;
+  background:#fff;color:var(--ink);
+  padding:6px 11px;border-radius:999px;
+  font-size:12px;font-weight:600;letter-spacing:.01em;
+  box-shadow:0 2px 8px rgba(30,61,40,.14);
+}
+.heart{
+  position:absolute;right:12px;top:12px;
+  width:32px;height:32px;display:grid;place-items:center;
+  transition:transform .25s var(--ease);
+  z-index: 2; /* Agregado para que sea cliqueable sobre el card */
+}
+.heart svg{
+  width:26px;height:26px;
+  fill:rgba(30,61,40,.42);
+  stroke:#fff;stroke-width:2;
+  transition:fill .25s var(--ease),stroke .25s var(--ease),transform .25s var(--ease);
+  filter:drop-shadow(0 1px 3px rgba(0,0,0,.35));
+}
+.heart:hover svg{transform:scale(1.12)}
+.heart:active svg{transform:scale(.9)}
+.heart.is-active svg{fill:var(--pine);stroke:var(--pine);animation:pop .4s var(--ease)}
+@keyframes pop{
+  0%{transform:scale(1)}40%{transform:scale(1.35)}70%{transform:scale(.92)}100%{transform:scale(1)}
+}
+
+.info{padding-top:12px}
+.title{font-weight:600;font-size:15px;letter-spacing:-.1px}
+.rating-line{display:flex;align-items:center;gap:4px;font-size:14px;margin:4px 0}
+.rating-line .star{color:var(--pine)}
+.rating-line .count{color:var(--muted)}
+.desc{color:var(--muted);font-size:14px;margin:6px 0 8px}
+.price-row{font-size:15px}
+.price{font-weight:700;color:var(--ink)}
+
+/* ---------- MAP ---------- */
+.map{
+  height:calc(100vh - 240px);min-height:520px;
+  position:sticky;top:110px;border-radius:18px;overflow:hidden;
+  background:#dbe6d3;
+  box-shadow:0 1px 0 rgba(30,61,40,.06),inset 0 0 0 1px rgba(30,61,40,.05);
+}
+.mapbg{
+  position:absolute;inset:0;
+  background:
+    radial-gradient(120% 80% at 15% 10%,#ddeacd 0 40%,transparent 40%),
+    radial-gradient(90% 70% at 90% 85%,#c3d6bb 0 45%,transparent 45%),
+    linear-gradient(25deg,#b9d1b3 0 22%,#dfe6d2 22% 40%,#bcd1c8 40% 46%,#e7e6d1 46% 74%,#c2d8b8 74%);
+}
+.road,.road2{position:absolute;background:rgba(255,255,255,.85);box-shadow:0 1px 2px rgba(30,61,40,.15)}
+.road{width:135%;height:16px;transform:rotate(-12deg);top:48%;left:-10%}
+.road2{width:120%;height:11px;transform:rotate(23deg);top:30%;left:-5%;opacity:.85}
+.pin{
+  position:absolute;background:#fff;color:var(--ink);
+  border-radius:999px;padding:7px 12px;font-size:13px;font-weight:700;
+  box-shadow:0 3px 12px rgba(30,61,40,.22),0 0 0 1px rgba(30,61,40,.05);
+  transition:transform .3s var(--ease),background .3s var(--ease),
+             color .3s var(--ease),box-shadow .3s var(--ease);
+  cursor:pointer;
+}
+.pin:hover{
+  transform:scale(1.1) translateY(-2px);
+  background:var(--pine);color:#fff;
+  box-shadow:0 10px 24px rgba(30,61,40,.4);
+  z-index:2;
+}
+.p1{top:24%;left:24%}
+.p2{top:52%;left:58%}
+.p3{top:70%;left:34%}
+.mapnote{
+  position:absolute;bottom:14px;left:14px;right:14px;
+  background:rgba(250,250,245,.94);
+  backdrop-filter:blur(8px);
+  padding:10px 13px;border-radius:10px;
+  font-size:12px;color:var(--muted);line-height:1.35;
+  box-shadow:0 2px 10px rgba(30,61,40,.08);
+}
+
+/* ---------- SUGGEST ---------- */
+.section{padding:14px 5% 60px}
+.suggest{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:22px}
+.suggest .photo{height:220px}
+.suggest h3{
+  font-size:15px;font-weight:600;margin:12px 0 2px;letter-spacing:-.1px;
+}
+.suggest .meta{margin:0;color:var(--muted)}
+.suggest .meta .where{color:var(--pine);font-weight:600}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width:900px){
+  .layout{grid-template-columns:1fr;gap:20px}
+  .map{display:none}
+  .cards{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:640px){
+  .search-wrap{padding:16px 16px 8px;gap:12px}
+  .search{flex-direction:column;align-items:stretch;border-radius:24px;padding:6px}
+  .field{border-radius:16px;padding:12px 16px}
+  .field:not(:first-child)::before{display:none}
+  .search-btn{width:100%;border-radius:16px;margin:4px 0 0;height:46px}
+  .filters{padding-left:16px;padding-right:16px}
+  .layout,.section{padding-left:16px;padding-right:16px}
+  .cards,.suggest{grid-template-columns:1fr}
+  .nav{padding:0 16px}
+  .nav-actions .pill:first-child{display:none}
+  .region-badge{display:flex;margin:8px 0 0}
+  .search-context{font-size:12px;padding:5px 12px}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="logo" href="index.html" aria-label="Entre Nubes, inicio">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M12 22V12M12 12c0-4 3-7 7-7 0 4-3 7-7 7Zm0 0c0-4-3-7-7-7 0 4 3 7 7 7Zm0-10c0-2-1.5-4-4-4 0 2 1.5 4 4 4Z" fill="currentColor" stroke="none"/>
+    </svg>
+    Entre Nubes
+  </a>
+  <div class="nav-actions">
+    <button class="pill" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>
+      </svg>
+      MXN · Español
+    </button>
+    <button class="pill" type="button" aria-label="Menú">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+        <path d="M4 7h16M4 12h16M4 17h16"/>
+      </svg>
+    </button>
+  </div>
+</nav>
+
+<div class="search-wrap">
+  <div class="search-context">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M12 22s7-6.5 7-12a7 7 0 1 0-14 0c0 5.5 7 12 7 12Z"/><circle cx="12" cy="10" r="2.5"/>
+    </svg>
+    Buscando en <b>San José del Pacífico, Oaxaca</b>
+  </div>
+
+  <form class="search" action="propiedad.html">
+    <div class="field">
+      <label for="in">Llegada</label>
+      <input id="in" type="date">
+    </div>
+    <div class="field">
+      <label for="out">Salida</label>
+      <input id="out" type="date">
+    </div>
+    <div class="field">
+      <label for="guests">Huéspedes</label>
+      <select id="guests">
+        <option>2 huéspedes</option>
+        <option>4 huéspedes</option>
+        <option>6 huéspedes</option>
+      </select>
+    </div>
+    <button class="search-btn" type="submit" aria-label="Buscar">
+      <svg viewBox="0 0 32 32" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" aria-hidden="true">
+        <circle cx="13" cy="13" r="10"/><path d="m21 21 8 8"/>
+      </svg>
+    </button>
+  </form>
+</div>
+
+<div class="filters" role="toolbar" aria-label="Filtros de búsqueda">
+  <button class="chip" type="button">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M3 7h11M18 7h3M3 17h4M11 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg>
+    Filtros
+  </button>
+  <button class="chip" type="button">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.6 12.3 12.7 4.4a2 2 0 0 0-1.4-.6H5.5A2.5 2.5 0 0 0 3 6.3v5.8c0 .5.2 1 .6 1.4l7.9 7.9a2 2 0 0 0 2.8 0l6.3-6.3a2 2 0 0 0 0-2.8Z"/><circle cx="7.5" cy="7.5" r="1.3"/></svg>
+    Precio total
+  </button>
+  <button class="chip" type="button">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7v10a2 2 0 0 1-2 2h-4v-7h-6v7H5a2 2 0 0 1-2-2Z"/></svg>
+    Cabañas
+  </button>
+  <button class="chip" type="button">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 19V6M3 13h18v6M21 19v-3a3 3 0 0 0-3-3h-7v1"/><circle cx="7" cy="10" r="2"/></svg>
+    Habitaciones y camas
+  </button>
+  <button class="chip" type="button">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4.5 12.5a11 11 0 0 1 15 0M8 16a6 6 0 0 1 8 0"/><circle cx="12" cy="19" r="1"/></svg>
+    Wi-Fi
+  </button>
+  <button class="chip" type="button">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M3 11c2 0 2-2 4-2s2 2 4 2 2-2 4-2 2 2 4 2M3 17c2 0 2-2 4-2s2 2 4 2 2-2 4-2 2 2 4 2"/></svg>
+    Jacuzzi
+  </button>
+  <button class="chip" type="button">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 17v-4l1.5-4.5A2 2 0 0 1 9.4 7h5.2a2 2 0 0 1 1.9 1.5L18 13v4M5 17h14"/><circle cx="8.5" cy="17" r="1.5"/><circle cx="15.5" cy="17" r="1.5"/></svg>
+    Estacionamiento
+  </button>
+  <button class="chip" type="button">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><circle cx="7" cy="9" r="2"/><circle cx="12" cy="6.5" r="2"/><circle cx="17" cy="9" r="2"/><path d="M8 16c0-2.2 1.8-4 4-4s4 1.8 4 4-1.8 3-4 3-4-.8-4-3Z"/></svg>
+    Se admiten mascotas
+  </button>
+  <button class="chip" type="button">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z"/></svg>
+    Reservación inmediata
+  </button>
+</div>
+
+<main class="layout">
+  <section>
+    <h2 class="section-title">
+      <span class="dot">◆</span>Estancias en San José del Pacífico
+    </h2>
+    <p class="meta">
+      Alojamientos disponibles · Ordenados por recomendación
+      <span class="region-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s7-6.5 7-12a7 7 0 1 0-14 0c0 5.5 7 12 7 12Z"/><circle cx="12" cy="10" r="2.5"/></svg>
+        Oaxaca, México
+      </span>
+    </p>
+
+    <!-- Contenedor vacío donde Strapi inyectará las tarjetas -->
+    <div class="cards" id="lista-cabanas">
+        <!-- El contenido se cargará por JavaScript -->
+    </div>
+  </section>
+
+  <aside class="map" aria-label="Mapa de la zona">
+    <div class="mapbg">
+      <div class="road"></div>
+      <div class="road2"></div>
+      <div class="pin p1">$2,500</div>
+      <div class="pin p2">$1,850</div>
+      <div class="pin p3">$2,100</div>
+      <div class="mapnote">Mapa ilustrativo de San José del Pacífico · las ubicaciones exactas se mostrarían al integrar un proveedor de mapas.</div>
+    </div>
+  </aside>
+</main>
+
+<section class="section">
+  <h2 class="section-title">
+    <span class="dot">◆</span>Más alojamientos en San José del Pacífico
+  </h2>
+  <p class="meta">Otras cabañas y refugios dentro de la misma zona.</p>
+  <div class="suggest">
+    <a class="card" href="propiedad.html">
+      <div class="photo"><img src="https://images.unsplash.com/photo-1449158743715-0a90ebb6d2d8?w=700" alt="Casa Bosque"></div>
+      <h3>Casa Bosque</h3>
+      <p class="meta"><span class="where">SJP</span> · ★ 4.91 · desde $2,200 MXN</p>
+    </a>
+    <a class="card" href="propiedad.html">
+      <div class="photo"><img src="https://images.unsplash.com/photo-1601918774946-25832a4be0d6?w=700" alt="Cabaña Amanecer"></div>
+      <h3>Cabaña Amanecer</h3>
+      <p class="meta"><span class="where">SJP</span> · ★ 4.89 · desde $2,050 MXN</p>
+    </a>
+    <a class="card" href="propiedad.html">
+      <div class="photo"><img src="https://images.unsplash.com/photo-1510798831971-661eb04b3739?w=700" alt="Refugio Montaña"></div>
+      <h3>Refugio Montaña</h3>
+      <p class="meta"><span class="where">SJP</span> · ★ 4.97 · desde $2,750 MXN</p>
+    </a>
+  </div>
+</section>
+
+<script>
+  // 1. Delegación de eventos para el botón de favoritos
+  document.addEventListener('click', function(e){
+    const btn = e.target.closest('.heart');
+    if(btn){
+      e.preventDefault(); 
+      e.stopPropagation();
+      btn.classList.toggle('is-active');
+    }
+  });
+
+  // 2. Petición a la API de Strapi v5
+  fetch('http://localhost:1337/api/propiedads?populate=*') 
+    .then(response => {
+      if(!response.ok) throw new Error('Error en la red');
+      return response.json();
+    })
+    .then(res => {
+      const contenedor = document.getElementById('lista-cabanas');
+      contenedor.innerHTML = ''; // Limpiamos el mensaje de error
+      
+      if(res.data) {
+        const propiedades = res.data;
+        
+        propiedades.forEach(prop => {
+          // Strapi v5 entrega los datos directos, sin ".attributes"
+          
+          // Procesamos la imagen
+          let urlImagen = 'https://images.unsplash.com/photo-1542718610-a1d656d1884c?w=900'; 
+          if(prop.Imagenes && prop.Imagenes.length > 0) {
+             urlImagen = 'http://localhost:1337' + prop.Imagenes[0].url;
+          }
+          
+          // Inyectamos el HTML dinámico
+          contenedor.innerHTML += `
+            <a class="card" href="propiedad.html?id=${prop.documentId || prop.id}">
+              <div class="photo">
+                <img src="${urlImagen}" alt="${prop.Titulo}">
+                <span class="tag">San José del Pacífico</span>
+                <button class="heart" type="button" aria-label="Guardar en favoritos">
+                  <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 28c7-4.7 14-10.2 14-17a7 7 0 0 0-14-1.4A7 7 0 0 0 2 11c0 6.8 7 12.3 14 17Z"/></svg>
+                </button>
+              </div>
+              <div class="info">
+                <div class="title">${prop.Titulo || 'Cabaña en San José del Pacífico'}</div>
+                <div class="meta">${prop.Huespedes || 2} huéspedes · ${prop.Habitaciones || 1} hab · ${prop.Banos || 1} baños</div>
+                <div class="rating-line"><span class="star">★</span> Nuevo</div>
+                <p class="desc">${prop.Descripcion ? prop.Descripcion.substring(0, 70) + '...' : ''}</p>
+                <div class="price-row"><span class="price">$${prop.Precio_Noche || 0} MXN</span> <span class="meta" style="display:inline">noche</span></div>
+              </div>
+            </a>
+          `;
+        });
+      }
+    })
+    .catch(error => {
+      console.error('Error procesando datos:', error);
+      document.getElementById('lista-cabanas').innerHTML = '<p style="grid-column: 1/-1; color: var(--rose);">Ocurrió un error leyendo los datos de Strapi.</p>';
+    });
+</script>
+</body>
+</html>

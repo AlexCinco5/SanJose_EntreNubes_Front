@@ -1,0 +1,735 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Panel de administración · Entre Nubes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --pine:#2d5a3d;
+  --pine-d:#1e3d28;
+  --moss:#4a7c59;
+  --sage:#8aa88f;
+  --mint:#e6efe8;
+  --cream:#fafaf5;
+  --sand:#e8e2d4;
+  --amber:#c8912f;
+  --amber-soft:#fdf3dd;
+  --rose:#a94a4a;
+  --rose-soft:#fbeaea;
+  --ink:#1a2e20;
+  --muted:#6b7a6f;
+  --line:#e2e8de;
+  --soft:#f2f5ee;
+  --white:#ffffff;
+
+  --ease:cubic-bezier(.2,0,0,1);
+  --shadow-sm:0 1px 2px rgba(30,61,40,.06);
+  --shadow-md:0 4px 12px rgba(30,61,40,.10);
+  --shadow-lg:0 8px 28px rgba(30,61,40,.16);
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  font-size:14px;line-height:1.5;color:var(--ink);background:var(--soft);
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:0;padding:0}
+a{color:inherit;text-decoration:none}
+img{display:block;max-width:100%}
+:focus-visible{outline:2px solid var(--pine);outline-offset:2px;border-radius:6px}
+h1,h2,h3,h4{margin:0;font-family:Montserrat,sans-serif;letter-spacing:-.3px}
+
+/* ---------- SHELL ---------- */
+.shell{
+  display:grid;
+  grid-template-columns:248px 1fr;
+  min-height:100vh;
+}
+
+/* ---------- SIDEBAR ---------- */
+.sidebar{
+  background:var(--pine);
+  color:rgba(255,255,255,.78);
+  padding:22px 14px;
+  display:flex;flex-direction:column;gap:26px;
+  position:sticky;top:0;height:100vh;
+  overflow-y:auto;
+}
+.sidebar::-webkit-scrollbar{width:6px}
+.sidebar::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:999px}
+.brand{
+  display:flex;align-items:center;gap:10px;padding:0 10px;
+  font:700 18px/1 Montserrat,sans-serif;
+  color:#fff;letter-spacing:-.4px;
+}
+.brand svg{width:20px;height:20px;color:#fff;flex:0 0 20px}
+.brand span small{
+  display:block;font:500 10px/1 Inter,sans-serif;
+  color:rgba(255,255,255,.55);letter-spacing:.06em;text-transform:uppercase;
+  margin-top:4px;
+}
+
+.nav-group{margin-top:4px}
+.nav-label{
+  font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  padding:0 12px;margin-bottom:8px;
+  color:rgba(255,255,255,.45);
+}
+.nav-link{
+  display:flex;align-items:center;gap:11px;
+  padding:10px 12px;border-radius:10px;
+  font-size:13.5px;font-weight:500;
+  color:rgba(255,255,255,.78);
+  transition:background .25s var(--ease),color .25s var(--ease),transform .25s var(--ease);
+  cursor:pointer;
+}
+.nav-link svg{width:17px;height:17px;opacity:.75;flex:0 0 17px;transition:opacity .25s var(--ease)}
+.nav-link:hover{background:rgba(255,255,255,.08);color:#fff}
+.nav-link:hover svg{opacity:1}
+.nav-link.active{
+  background:rgba(255,255,255,.14);color:#fff;font-weight:600;
+}
+.nav-link.active svg{opacity:1}
+.nav-link .count{
+  margin-left:auto;background:rgba(255,255,255,.14);
+  padding:2px 8px;border-radius:999px;
+  font-size:11px;font-weight:600;color:#fff;
+}
+.nav-link.active .count{background:var(--mint);color:var(--pine)}
+
+.sidebar-foot{
+  margin-top:auto;padding:14px 12px 4px;
+  border-top:1px solid rgba(255,255,255,.1);
+  display:flex;align-items:center;gap:11px;
+}
+.avatar-sm{
+  width:34px;height:34px;border-radius:50%;flex:0 0 34px;
+  background:linear-gradient(135deg,#a3c4a8,var(--moss));
+  display:grid;place-items:center;color:#fff;
+  font-weight:700;font-size:13px;
+}
+.sidebar-foot .who{font-size:12.5px;line-height:1.3;color:#fff;font-weight:600}
+.sidebar-foot .who small{display:block;color:rgba(255,255,255,.55);font-weight:400;font-size:11px;margin-top:2px}
+
+/* ---------- MAIN ---------- */
+.main{padding:28px 32px 60px;min-width:0}
+.topbar{
+  display:flex;align-items:center;gap:16px;margin-bottom:26px;
+}
+.topbar h1{
+  font-size:24px;font-weight:700;color:var(--ink);
+}
+.topbar .date{
+  font-size:13px;color:var(--muted);margin-top:4px;font-family:Inter,sans-serif;font-weight:400;letter-spacing:0;
+}
+.topbar .spacer{flex:1}
+.top-actions{display:flex;gap:8px;align-items:center}
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:10px 15px;border-radius:10px;
+  font-size:13px;font-weight:600;
+  border:1px solid var(--line);background:#fff;color:var(--ink);
+  transition:border-color .25s var(--ease),box-shadow .25s var(--ease),
+             transform .25s var(--ease),background .25s var(--ease),color .25s var(--ease);
+}
+.btn svg{width:15px;height:15px;opacity:.75}
+.btn:hover{border-color:var(--pine);color:var(--pine);box-shadow:var(--shadow-sm)}
+.btn:hover svg{opacity:1;color:var(--pine)}
+.btn:active{transform:scale(.97)}
+.btn.primary{
+  background:var(--pine);color:#fff;border-color:var(--pine);
+}
+.btn.primary svg{opacity:1;color:#fff}
+.btn.primary:hover{background:var(--pine-d);border-color:var(--pine-d);color:#fff;box-shadow:0 6px 18px rgba(45,90,61,.3)}
+.icon-round{
+  width:40px;height:40px;border-radius:50%;
+  border:1px solid var(--line);background:#fff;
+  display:grid;place-items:center;position:relative;
+  transition:box-shadow .25s var(--ease),border-color .25s var(--ease);
+}
+.icon-round svg{width:17px;height:17px;opacity:.75}
+.icon-round:hover{border-color:var(--sage);box-shadow:var(--shadow-sm)}
+.icon-round .dot{
+  position:absolute;top:8px;right:9px;
+  width:7px;height:7px;border-radius:50%;
+  background:var(--amber);border:2px solid #fff;
+}
+
+/* ---------- STATS ---------- */
+.stats{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:16px;margin-bottom:26px;
+}
+.stat{
+  background:#fff;border:1px solid var(--line);border-radius:14px;
+  padding:18px 20px;
+  transition:box-shadow .3s var(--ease),border-color .3s var(--ease),transform .3s var(--ease);
+}
+.stat:hover{box-shadow:var(--shadow-md);border-color:var(--sage);transform:translateY(-2px)}
+.stat .label{
+  font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--muted);display:flex;align-items:center;gap:8px;
+}
+.stat .label svg{width:14px;height:14px;color:var(--pine);opacity:.8}
+.stat .value{
+  font:700 26px/1.1 Montserrat,sans-serif;color:var(--ink);
+  margin-top:10px;letter-spacing:-.6px;
+}
+.stat .delta{
+  display:inline-flex;align-items:center;gap:5px;
+  margin-top:8px;font-size:12px;font-weight:600;
+  padding:3px 9px;border-radius:999px;
+}
+.delta.up{background:var(--mint);color:var(--pine)}
+.delta.down{background:var(--rose-soft);color:var(--rose)}
+.delta.flat{background:var(--sand);color:#7a6c50}
+.delta svg{width:11px;height:11px}
+
+/* ---------- PANELS ---------- */
+.row-2{
+  display:grid;grid-template-columns:1.5fr 1fr;
+  gap:16px;margin-bottom:22px;
+}
+.panel{
+  background:#fff;border:1px solid var(--line);border-radius:14px;
+  padding:20px 22px;
+}
+.panel-head{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:14px;gap:12px;
+}
+.panel-head h3{
+  font-size:16px;font-weight:600;display:flex;align-items:center;gap:8px;
+}
+.panel-head h3::before{
+  content:"";width:6px;height:6px;border-radius:50%;background:var(--pine);flex:0 0 6px;
+}
+.panel-head .link{
+  font-size:12.5px;font-weight:600;color:var(--pine);
+  display:inline-flex;align-items:center;gap:5px;
+  padding:5px 10px;border-radius:8px;
+  transition:background .25s var(--ease);
+}
+.panel-head .link:hover{background:var(--mint)}
+.panel-head .link svg{width:12px;height:12px}
+
+/* Table */
+.table{width:100%;border-collapse:separate;border-spacing:0}
+.table th{
+  font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--muted);text-align:left;padding:0 10px 10px;border-bottom:1px solid var(--line);
+}
+.table th:first-child{padding-left:0}
+.table th:last-child{padding-right:0;text-align:right}
+.table td{
+  padding:12px 10px;border-bottom:1px solid var(--line);
+  font-size:13.5px;vertical-align:middle;
+}
+.table td:first-child{padding-left:0}
+.table td:last-child{padding-right:0;text-align:right}
+.table tr:last-child td{border-bottom:0}
+.guest{
+  display:flex;align-items:center;gap:10px;
+}
+.avatar-tiny{
+  width:30px;height:30px;border-radius:50%;flex:0 0 30px;
+  display:grid;place-items:center;color:#fff;
+  font-weight:700;font-size:11px;letter-spacing:.02em;
+}
+.a1{background:#4a7c59}
+.a2{background:#7a6c50}
+.a3{background:#8aa88f}
+.a4{background:#2d5a3d}
+.guest b{display:block;font-weight:600;font-size:13.5px;color:var(--ink)}
+.guest small{color:var(--muted);font-size:12px}
+.badge{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:4px 9px;border-radius:999px;
+  font-size:11.5px;font-weight:600;letter-spacing:.01em;
+}
+.badge svg{width:10px;height:10px}
+.badge.confirmed{background:var(--mint);color:var(--pine)}
+.badge.pending{background:var(--amber-soft);color:var(--amber)}
+.badge.cancelled{background:var(--rose-soft);color:var(--rose)}
+.price-cell{font-weight:700;font-size:13.5px;color:var(--ink);white-space:nowrap}
+.row-action{
+  width:30px;height:30px;border-radius:8px;display:inline-grid;place-items:center;
+  color:var(--muted);
+  transition:background .2s var(--ease),color .2s var(--ease);
+}
+.row-action:hover{background:var(--soft);color:var(--pine)}
+.row-action svg{width:15px;height:15px}
+
+/* Chart */
+.chart-wrap{padding-top:6px}
+.chart{
+  display:flex;align-items:flex-end;gap:10px;
+  height:150px;padding:8px 4px 0;
+}
+.bar{
+  flex:1;min-width:0;position:relative;
+  display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:6px;
+}
+.bar .fill{
+  width:100%;max-width:34px;background:linear-gradient(180deg,var(--moss),var(--pine));
+  border-radius:8px 8px 3px 3px;
+  transition:transform .35s var(--ease),filter .25s var(--ease),box-shadow .3s var(--ease);
+  transform-origin:bottom;
+  box-shadow:0 2px 6px rgba(45,90,61,.18);
+  cursor:pointer;
+}
+.bar .fill:hover{filter:brightness(1.08);box-shadow:0 6px 14px rgba(45,90,61,.3);transform:scaleY(1.02)}
+.bar .lbl{
+  font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.03em;
+}
+.chart-foot{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-top:14px;padding-top:14px;border-top:1px solid var(--line);
+  font-size:12px;color:var(--muted);
+}
+.chart-foot b{color:var(--ink);font-weight:600}
+
+/* Listings */
+.listings{display:flex;flex-direction:column;gap:2px}
+.listing{
+  display:grid;grid-template-columns:auto 1fr auto auto;gap:16px;align-items:center;
+  padding:12px 10px;border-radius:12px;
+  transition:background .25s var(--ease);
+}
+.listing:hover{background:var(--soft)}
+.listing .thumb{
+  width:56px;height:56px;border-radius:10px;overflow:hidden;flex:0 0 56px;
+  background:var(--soft);position:relative;
+}
+.listing .thumb img{width:100%;height:100%;object-fit:cover}
+.listing .info b{display:block;font-weight:600;font-size:14px;color:var(--ink)}
+.listing .info small{color:var(--muted);font-size:12.5px;display:block;margin-top:2px}
+.listing .stats-mini{display:flex;gap:18px;font-size:12.5px;color:var(--muted);white-space:nowrap}
+.listing .stats-mini b{color:var(--ink);font-weight:600;display:block;font-size:13.5px}
+.listing .mini-actions{display:flex;gap:2px}
+.status-dot{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:12px;font-weight:600;
+}
+.status-dot::before{
+  content:"";width:7px;height:7px;border-radius:50%;
+}
+.status-dot.on::before{background:var(--moss);box-shadow:0 0 0 3px rgba(74,124,89,.18)}
+.status-dot.off::before{background:#b0b8b0}
+.status-dot.on{color:var(--pine)}
+.status-dot.off{color:var(--muted)}
+
+/* Footer */
+.admin-footer{
+  margin-top:36px;padding-top:20px;border-top:1px solid var(--line);
+  font-size:12px;color:var(--muted);
+  display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;
+}
+.admin-footer a{color:var(--muted);transition:color .2s var(--ease)}
+.admin-footer a:hover{color:var(--pine)}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width:1080px){
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .row-2{grid-template-columns:1fr}
+}
+@media (max-width:900px){
+  .shell{grid-template-columns:1fr}
+  .sidebar{
+    position:static;height:auto;flex-direction:row;align-items:center;
+    padding:14px 18px;gap:14px;overflow-x:auto;
+  }
+  .sidebar::-webkit-scrollbar{display:none}
+  .brand{padding:0;flex:0 0 auto}
+  .brand span small{display:none}
+  .nav-group{display:flex;gap:4px;margin:0;flex:1}
+  .nav-label{display:none}
+  .nav-link{white-space:nowrap;padding:8px 12px;font-size:13px}
+  .nav-link .count{display:none}
+  .sidebar-foot{margin:0;border-top:0;padding:0}
+  .sidebar-foot .who{display:none}
+  .main{padding:22px 18px 50px}
+}
+@media (max-width:640px){
+  .stats{grid-template-columns:1fr}
+  .topbar{flex-wrap:wrap}
+  .topbar h1{font-size:20px}
+  .btn{padding:9px 12px;font-size:12.5px}
+  .listing{grid-template-columns:auto 1fr;gap:12px}
+  .listing .stats-mini{grid-column:1/-1;padding-left:68px}
+  .listing .mini-actions{display:none}
+  .table th:nth-child(2),.table td:nth-child(2){display:none}
+  .table th:nth-child(3),.table td:nth-child(3){display:none}
+  .panel{padding:16px}
+}
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <a class="brand" href="index.html" aria-label="Entre Nubes">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M12 22V12M12 12c0-4 3-7 7-7 0 4-3 7-7 7Zm0 0c0-4-3-7-7-7 0 4 3 7 7 7Zm0-10c0-2-1.5-4-4-4 0 2 1.5 4 4 4Z" fill="currentColor" stroke="none"/>
+      </svg>
+      <span>Entre Nubes<small>Panel admin</small></span>
+    </a>
+
+    <div class="nav-group">
+      <div class="nav-label">General</div>
+      <a class="nav-link active" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="11" width="7" height="10" rx="1.5"/><rect x="3" y="15" width="7" height="6" rx="1.5"/></svg>
+        Resumen
+      </a>
+      <a class="nav-link" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="m3 10 9-7 9 7v10a2 2 0 0 1-2 2h-4v-7h-6v7H5a2 2 0 0 1-2-2Z"/></svg>
+        Alojamientos
+        <span class="count">5</span>
+      </a>
+      <a class="nav-link" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+        Reservaciones
+        <span class="count">42</span>
+      </a>
+      <a class="nav-link" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+        Anfitriones
+      </a>
+      <a class="nav-link" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5a11 11 0 0 1 15 0M8 16a6 6 0 0 1 8 0"/><circle cx="12" cy="19" r="1"/></svg>
+        Huéspedes
+      </a>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">Contenido</div>
+      <a class="nav-link" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="m12 3 3 6 6 .9-4.5 4.2 1 6L12 17l-5.5 3 1-6L3 9.9 9 9l3-6Z"/></svg>
+        Reseñas
+      </a>
+      <a class="nav-link" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+        Reportes
+      </a>
+      <a class="nav-link" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/></svg>
+        Configuración
+      </a>
+    </div>
+
+    <div class="sidebar-foot">
+      <div class="avatar-sm">AR</div>
+      <div class="who">
+        Ana Ríos
+        <small>Administradora general</small>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <div class="topbar">
+      <div>
+        <h1>Resumen general</h1>
+        <div class="date">Viernes, 11 de septiembre de 2026 · San José del Pacífico</div>
+      </div>
+      <div class="spacer"></div>
+      <div class="top-actions">
+        <button class="btn" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M8 11l4 4 4-4M5 19h14"/></svg>
+          Exportar
+        </button>
+        <button class="btn primary" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+          Nuevo alojamiento
+        </button>
+        <button class="icon-round" type="button" aria-label="Notificaciones">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+          <span class="dot"></span>
+        </button>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats">
+      <div class="stat">
+        <div class="label">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="m3 10 9-7 9 7v10a2 2 0 0 1-2 2h-4v-7h-6v7H5a2 2 0 0 1-2-2Z"/></svg>
+          Alojamientos activos
+        </div>
+        <div class="value">5</div>
+        <span class="delta flat">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14"/></svg>
+          Sin cambios
+        </span>
+      </div>
+
+      <div class="stat">
+        <div class="label">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+          Reservaciones del mes
+        </div>
+        <div class="value">42</div>
+        <span class="delta up">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></svg>
+          +12% vs. agosto
+        </span>
+      </div>
+
+      <div class="stat">
+        <div class="label">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M7 8h10M7 16h10"/></svg>
+          Ingresos del mes
+        </div>
+        <div class="value">$118,400</div>
+        <span class="delta up">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></svg>
+          +8.4% vs. agosto
+        </span>
+      </div>
+
+      <div class="stat">
+        <div class="label">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+          Ocupación promedio
+        </div>
+        <div class="value">78%</div>
+        <span class="delta down">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+          −3% vs. agosto
+        </span>
+      </div>
+    </div>
+
+    <!-- ROW 2 -->
+    <div class="row-2">
+
+      <!-- Recent bookings -->
+      <div class="panel">
+        <div class="panel-head">
+          <h3>Reservaciones recientes</h3>
+          <a class="link" href="#">
+            Ver todas
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>
+          </a>
+        </div>
+
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Huésped</th>
+              <th>Alojamiento</th>
+              <th>Fechas</th>
+              <th>Estado</th>
+              <th>Total</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <div class="guest">
+                  <div class="avatar-tiny a1">ML</div>
+                  <div><b>Mariana López</b><small>2 huéspedes</small></div>
+                </div>
+              </td>
+              <td>Cabaña Mirador</td>
+              <td>11 – 13 sep</td>
+              <td><span class="badge confirmed"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-11"/></svg>Confirmada</span></td>
+              <td class="price-cell">$5,350</td>
+              <td><button class="row-action" type="button" aria-label="Opciones"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button></td>
+            </tr>
+            <tr>
+              <td>
+                <div class="guest">
+                  <div class="avatar-tiny a2">JR</div>
+                  <div><b>Jorge Ramírez</b><small>2 huéspedes</small></div>
+                </div>
+              </td>
+              <td>Refugio Niebla</td>
+              <td>15 – 17 sep</td>
+              <td><span class="badge pending"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>Pendiente</span></td>
+              <td class="price-cell">$4,050</td>
+              <td><button class="row-action" type="button" aria-label="Opciones"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button></td>
+            </tr>
+            <tr>
+              <td>
+                <div class="guest">
+                  <div class="avatar-tiny a3">LH</div>
+                  <div><b>Lucía Hernández</b><small>4 huéspedes</small></div>
+                </div>
+              </td>
+              <td>Casa Bosque</td>
+              <td>18 – 20 sep</td>
+              <td><span class="badge confirmed"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-11"/></svg>Confirmada</span></td>
+              <td class="price-cell">$4,750</td>
+              <td><button class="row-action" type="button" aria-label="Opciones"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button></td>
+            </tr>
+            <tr>
+              <td>
+                <div class="guest">
+                  <div class="avatar-tiny a4">DO</div>
+                  <div><b>Daniel Ortega</b><small>2 huéspedes</small></div>
+                </div>
+              </td>
+              <td>Cabaña Amanecer</td>
+              <td>22 – 24 sep</td>
+              <td><span class="badge cancelled"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>Cancelada</span></td>
+              <td class="price-cell">$4,450</td>
+              <td><button class="row-action" type="button" aria-label="Opciones"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Chart -->
+      <div class="panel">
+        <div class="panel-head">
+          <h3>Reservaciones por mes</h3>
+          <a class="link" href="#">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9h.01M10 9h.01M14 9h.01M18 9h.01M6 13h.01M10 13h.01M14 13h.01M18 13h.01M6 17h.01M10 17h.01M14 17h.01M18 17h.01"/></svg>
+            Detalle
+          </a>
+        </div>
+
+        <div class="chart-wrap">
+          <div class="chart">
+            <div class="bar"><div class="fill" style="height:42%"></div><div class="lbl">Mar</div></div>
+            <div class="bar"><div class="fill" style="height:58%"></div><div class="lbl">Abr</div></div>
+            <div class="bar"><div class="fill" style="height:48%"></div><div class="lbl">May</div></div>
+            <div class="bar"><div class="fill" style="height:72%"></div><div class="lbl">Jun</div></div>
+            <div class="bar"><div class="fill" style="height:86%"></div><div class="lbl">Jul</div></div>
+            <div class="bar"><div class="fill" style="height:64%"></div><div class="lbl">Ago</div></div>
+            <div class="bar"><div class="fill" style="height:100%"></div><div class="lbl">Sep</div></div>
+          </div>
+
+          <div class="chart-foot">
+            <span>Pico en <b>septiembre</b></span>
+            <span><b>42</b> reservaciones</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- LISTINGS -->
+    <div class="panel">
+      <div class="panel-head">
+        <h3>Alojamientos en San José del Pacífico</h3>
+        <a class="link" href="#">
+          Ver todos
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>
+        </a>
+      </div>
+
+      <div class="listings">
+        <div class="listing">
+          <div class="thumb"><img src="https://images.unsplash.com/photo-1542718610-a1d656d1884c?w=200" alt="Cabaña Mirador"></div>
+          <div class="info">
+            <b>Cabaña Mirador</b>
+            <small>Anfitrión David · 4 huéspedes · 2 rec.</small>
+          </div>
+          <div class="stats-mini">
+            <div><b>$2,500</b>por noche</div>
+            <div><b>★ 4.95</b>12 reseñas</div>
+            <div><b>8</b>activas</div>
+          </div>
+          <div class="mini-actions">
+            <span class="status-dot on">Publicado</span>
+            <button class="row-action" type="button" aria-label="Editar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5Z"/></svg></button>
+          </div>
+        </div>
+
+        <div class="listing">
+          <div class="thumb"><img src="https://images.unsplash.com/photo-1510798831971-661eb04b3739?w=200" alt="Refugio Niebla"></div>
+          <div class="info">
+            <b>Refugio Niebla</b>
+            <small>Anfitrión David · 2 huéspedes · 1 rec.</small>
+          </div>
+          <div class="stats-mini">
+            <div><b>$1,850</b>por noche</div>
+            <div><b>★ 4.88</b>27 reseñas</div>
+            <div><b>5</b>activas</div>
+          </div>
+          <div class="mini-actions">
+            <span class="status-dot on">Publicado</span>
+            <button class="row-action" type="button" aria-label="Editar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5Z"/></svg></button>
+          </div>
+        </div>
+
+        <div class="listing">
+          <div class="thumb"><img src="https://images.unsplash.com/photo-1449158743715-0a90ebb6d2d8?w=200" alt="Casa Bosque"></div>
+          <div class="info">
+            <b>Casa Bosque</b>
+            <small>Anfitrión David · 6 huéspedes · 3 rec.</small>
+          </div>
+          <div class="stats-mini">
+            <div><b>$2,200</b>por noche</div>
+            <div><b>★ 4.91</b>18 reseñas</div>
+            <div><b>6</b>activas</div>
+          </div>
+          <div class="mini-actions">
+            <span class="status-dot on">Publicado</span>
+            <button class="row-action" type="button" aria-label="Editar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5Z"/></svg></button>
+          </div>
+        </div>
+
+        <div class="listing">
+          <div class="thumb"><img src="https://images.unsplash.com/photo-1601918774946-25832a4be0d6?w=200" alt="Cabaña Amanecer"></div>
+          <div class="info">
+            <b>Cabaña Amanecer</b>
+            <small>Anfitrión David · 2 huéspedes · 1 rec.</small>
+          </div>
+          <div class="stats-mini">
+            <div><b>$2,050</b>por noche</div>
+            <div><b>★ 4.89</b>9 reseñas</div>
+            <div><b>4</b>activas</div>
+          </div>
+          <div class="mini-actions">
+            <span class="status-dot on">Publicado</span>
+            <button class="row-action" type="button" aria-label="Editar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5Z"/></svg></button>
+          </div>
+        </div>
+
+        <div class="listing">
+          <div class="thumb"><img src="https://images.unsplash.com/photo-1510798831971-661eb04b3739?w=200" alt="Refugio Montaña"></div>
+          <div class="info">
+            <b>Refugio Montaña</b>
+            <small>Anfitrión David · 4 huéspedes · 2 rec.</small>
+          </div>
+          <div class="stats-mini">
+            <div><b>$2,750</b>por noche</div>
+            <div><b>★ 4.97</b>21 reseñas</div>
+            <div><b>—</b>en pausa</div>
+          </div>
+          <div class="mini-actions">
+            <span class="status-dot off">Pausado</span>
+            <button class="row-action" type="button" aria-label="Editar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5Z"/></svg></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="admin-footer">
+      <span>© 2026 Entre Nubes · Panel interno</span>
+      <span>
+        <a href="index.html">Ir al sitio público</a> ·
+        <a href="#">Ayuda</a> ·
+        <a href="#">Estado del sistema</a>
+      </span>
+    </div>
+
+  </main>
+</div>
+
+</body>
+</html>
