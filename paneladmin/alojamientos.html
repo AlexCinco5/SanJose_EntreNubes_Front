@@ -1,0 +1,508 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Alojamientos · Entre Nubes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+  /* ===== MODAL para el forms de nuevo alojamiento ===== */
+  .modal-overlay{
+    position:fixed;inset:0;z-index:1000;
+    background:rgba(26,46,32,.55);
+    backdrop-filter:blur(4px);
+    display:none;align-items:flex-start;justify-content:center;
+    padding:32px 16px;overflow-y:auto;
+    opacity:0;transition:opacity .25s cubic-bezier(.2,0,0,1);
+  }
+  .modal-overlay.open{display:flex;opacity:1}
+  .modal{
+    background:#fff;border-radius:16px;width:100%;max-width:720px;
+    box-shadow:0 20px 60px rgba(30,61,40,.3);
+    transform:translateY(12px) scale(.98);
+    transition:transform .3s cubic-bezier(.2,0,0,1);
+    overflow:hidden;margin:auto;
+  }
+  .modal-overlay.open .modal{transform:translateY(0) scale(1)}
+
+  .modal-head{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:20px 24px;border-bottom:1px solid #e2e8de;
+    position:sticky;top:0;background:#fff;z-index:2;
+  }
+  .modal-head h2{
+    font-size:18px;font-weight:700;font-family:Montserrat,sans-serif;
+    display:flex;align-items:center;gap:10px;letter-spacing:-.3px;
+  }
+  .modal-head h2::before{
+    content:"";width:8px;height:8px;border-radius:50%;background:#2d5a3d;
+  }
+  .modal-close{
+    width:34px;height:34px;border-radius:8px;
+    display:grid;place-items:center;color:#6b7a6f;
+    transition:background .2s,color .2s;
+  }
+  .modal-close:hover{background:#f2f5ee;color:#1a2e20}
+  .modal-close svg{width:18px;height:18px}
+
+  .modal-body{padding:22px 24px;display:flex;flex-direction:column;gap:20px}
+  .modal-foot{
+    padding:16px 24px;border-top:1px solid #e2e8de;
+    display:flex;justify-content:flex-end;gap:8px;
+    background:#f2f5ee;position:sticky;bottom:0;
+  }
+
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .form-field{display:flex;flex-direction:column;gap:6px}
+  .form-field.full{grid-column:1/-1}
+  .form-field label{
+    font-size:12.5px;font-weight:600;color:#1a2e20;
+    display:flex;align-items:center;gap:6px;
+  }
+  .form-field label .req{color:#a94a4a}
+  .form-field input[type="text"],
+  .form-field input[type="number"],
+  .form-field select,
+  .form-field textarea{
+    width:100%;padding:10px 12px;border-radius:10px;
+    border:1px solid #e2e8de;background:#f2f5ee;
+    font-size:13.5px;color:#1a2e20;
+    transition:border-color .2s,background .2s,box-shadow .2s;
+    font-family:inherit;
+  }
+  .form-field textarea{resize:vertical;min-height:90px}
+  .form-field input:focus,
+  .form-field select:focus,
+  .form-field textarea:focus{
+    outline:none;border-color:#2d5a3d;background:#fff;
+    box-shadow:0 0 0 3px rgba(45,90,61,.1);
+  }
+  .form-field small{font-size:11.5px;color:#6b7a6f}
+
+  .upload-zone{
+    border:2px dashed #e2e8de;border-radius:12px;
+    padding:24px;text-align:center;cursor:pointer;
+    background:#f2f5ee;
+    transition:border-color .2s,background .2s;
+  }
+  .upload-zone:hover,
+  .upload-zone.dragover{border-color:#2d5a3d;background:#e6efe8}
+  .upload-zone svg{
+    width:36px;height:36px;color:#2d5a3d;
+    margin:0 auto 10px;opacity:.8;
+  }
+  .upload-zone .txt b{display:block;font-size:13.5px;color:#1a2e20}
+  .upload-zone .txt small{font-size:12px;color:#6b7a6f;display:block;margin-top:3px}
+
+  .preview-grid{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));
+    gap:10px;margin-top:12px;
+  }
+  .preview-item{
+    position:relative;aspect-ratio:1;border-radius:10px;
+    overflow:hidden;background:#f2f5ee;border:1px solid #e2e8de;
+  }
+  .preview-item img{width:100%;height:100%;object-fit:cover}
+  .preview-item button{
+    position:absolute;top:5px;right:5px;
+    width:22px;height:22px;border-radius:50%;
+    background:rgba(255,255,255,.9);color:#a94a4a;
+    display:grid;place-items:center;
+    box-shadow:0 2px 6px rgba(0,0,0,.15);
+    transition:background .2s;
+  }
+  .preview-item button:hover{background:#a94a4a;color:#fff}
+  .preview-item button svg{width:12px;height:12px}
+
+  .amenities{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
+    gap:8px;
+  }
+  .amenity{
+    display:flex;align-items:center;gap:8px;
+    padding:10px 12px;border-radius:10px;
+    border:1px solid #e2e8de;background:#fff;
+    cursor:pointer;font-size:13px;
+    transition:border-color .2s,background .2s;
+    user-select:none;
+  }
+  .amenity:hover{border-color:#8aa88f}
+  .amenity input{display:none}
+  .amenity .box{
+    width:18px;height:18px;border-radius:5px;
+    border:1.5px solid #e2e8de;flex:0 0 18px;
+    display:grid;place-items:center;
+    transition:background .2s,border-color .2s;
+  }
+  .amenity .box svg{width:12px;height:12px;color:#fff;opacity:0;transition:opacity .2s}
+  .amenity input:checked + .box{background:#2d5a3d;border-color:#2d5a3d}
+  .amenity input:checked + .box svg{opacity:1}
+  .amenity input:checked ~ span{font-weight:600;color:#2d5a3d}
+
+  @media (max-width:640px){
+    .form-grid{grid-template-columns:1fr}
+    .modal-head h2{font-size:16px}
+    .modal-body{padding:18px}
+    .modal-foot{flex-direction:column-reverse}
+    .modal-foot .btn{width:100%;justify-content:center}
+  }
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- SIDEBAR (mismo de arriba, pero con active en Alojamientos) -->
+  <aside class="sidebar">
+    <a class="brand" href="index.html" aria-label="Entre Nubes">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 22V12M12 12c0-4 3-7 7-7 0 4-3 7-7 7Zm0 0c0-4-3-7-7-7 0 4 3 7 7 7Zm0-10c0-2-1.5-4-4-4 0 2 1.5 4 4 4Z" fill="currentColor" stroke="none"/>
+      </svg>
+      <span>Entre Nubes<small>Panel admin</small></span>
+    </a>
+
+    <div class="nav-group">
+      <div class="nav-label">General</div>
+      <a class="nav-link" href="admin.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="11" width="7" height="10" rx="1.5"/><rect x="3" y="15" width="7" height="6" rx="1.5"/></svg>
+        Resumen
+      </a>
+      <a class="nav-link active" href="alojamientos.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="m3 10 9-7 9 7v10a2 2 0 0 1-2 2h-4v-7h-6v7H5a2 2 0 0 1-2-2Z"/></svg>
+        Alojamientos
+        <span class="count">5</span>
+      </a>
+      <a class="nav-link" href="reservaciones.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+        Reservaciones
+        <span class="count">42</span>
+      </a>
+      <a class="nav-link" href="anfitriones.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+        Anfitriones
+      </a>
+      <a class="nav-link" href="huespedes.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5a11 11 0 0 1 15 0M8 16a6 6 0 0 1 8 0"/><circle cx="12" cy="19" r="1"/></svg>
+        Huéspedes
+      </a>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">Contenido</div>
+      <a class="nav-link" data-page="resenas" href="resenas.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="m12 3 3 6 6 .9-4.5 4.2 1 6L12 17l-5.5 3 1-6L3 9.9 9 9l3-6Z"/></svg>
+        Reseñas
+      </a>
+      <a class="nav-link" data-page="reportes" href="reportes.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+        Reportes
+      </a>
+      <a class="nav-link" data-page="configuracion" href="configuracion.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/></svg>
+        Configuración
+      </a>
+    </div>
+
+    <div class="sidebar-foot">
+      <div class="avatar-sm">AR</div>
+      <div class="who">Ana Ríos<small>Administradora general</small></div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="topbar">
+      <div>
+        <h1>Alojamientos</h1>
+        <div class="date">5 propiedades registradas · San José del Pacífico</div>
+      </div>
+      <div class="spacer"></div>
+      <div class="top-actions">
+        <button class="btn" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M8 11l4 4 4-4M5 19h14"/></svg>
+          Exportar
+        </button>
+        <button class="btn primary" type="button" id="btnNuevoAlojamiento">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+          Nuevo alojamiento
+        </button>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats">
+      <div class="stat">
+        <div class="label">Total propiedades</div>
+        <div class="value">5</div>
+        <span class="delta flat">Publicadas</span>
+      </div>
+      <div class="stat">
+        <div class="label">Disponibles ahora</div>
+        <div class="value">4</div>
+        <span class="delta up">+1 esta semana</span>
+      </div>
+      <div class="stat">
+        <div class="label">Rating promedio</div>
+        <div class="value">4.92</div>
+        <span class="delta up">+0.03</span>
+      </div>
+      <div class="stat">
+        <div class="label">Ingresos / noche</div>
+        <div class="value">$11,350</div>
+        <span class="delta up">+6%</span>
+      </div>
+    </div>
+
+    <!-- LISTADO -->
+    <div class="panel">
+      <div class="panel-head">
+        <h3>Todas las propiedades</h3>
+        <a class="link" href="#">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M6 12h12M10 18h4"/></svg>
+          Filtrar
+        </a>
+      </div>
+
+      <div class="listings">
+        <!-- Copia aquí los 5 bloques <div class="listing"> de tu index.html -->
+        <!-- (Cabaña Mirador, Refugio Niebla, Casa Bosque, Cabaña Amanecer, Refugio Montaña) -->
+      </div>
+    </div>
+
+    <div class="admin-footer">
+      <span>© 2026 Entre Nubes · Panel interno</span>
+      <span><a href="../index.html">Ir al sitio público</a> · <a href="#">Ayuda</a></span>
+    </div>
+  </main>
+</div>
+<!-- ============================================================
+     MODAL: NUEVO ALOJAMIENTO
+     ============================================================ -->
+<div class="modal-overlay" id="modalAlojamiento">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+
+    <div class="modal-head">
+      <h2 id="modalTitle">Nuevo alojamiento</h2>
+      <button class="modal-close" type="button" aria-label="Cerrar" data-close>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
+
+    <form id="formAlojamiento" class="modal-body" enctype="multipart/form-data">
+
+      <div class="form-grid">
+        <div class="form-field full">
+          <label for="nombre">Nombre del lugar <span class="req">*</span></label>
+          <input id="nombre" name="nombre" type="text" placeholder="Ej: Cabaña Mirador" required>
+        </div>
+
+        <div class="form-field">
+          <label for="tipo">Tipo de alojamiento</label>
+          <select id="tipo" name="tipo">
+            <option value="cabana">Cabaña</option>
+            <option value="refugio">Refugio</option>
+            <option value="casa">Casa</option>
+            <option value="glamping">Glamping</option>
+            <option value="habitacion">Habitación</option>
+          </select>
+        </div>
+
+        <div class="form-field">
+          <label for="precio">Precio por noche (MXN) <span class="req">*</span></label>
+          <input id="precio" name="precio" type="number" min="0" step="50" placeholder="2500" required>
+        </div>
+      </div>
+
+      <!-- IMÁGENES -->
+      <div class="form-field full">
+        <label>Imágenes del alojamiento <span class="req">*</span></label>
+        <div class="upload-zone" id="uploadZone">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 16V4M7 9l5-5 5 5"/>
+            <path d="M20 16v2a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2"/>
+          </svg>
+          <div class="txt">
+            <b>Haz clic o arrastra tus imágenes aquí</b>
+            <small>JPG, PNG o WebP · máximo 5 MB por archivo · hasta 10 imágenes</small>
+          </div>
+          <input type="file" id="inputImagenes" name="imagenes" accept="image/*" multiple hidden>
+        </div>
+        <div class="preview-grid" id="previewGrid"></div>
+      </div>
+
+      <!-- ACERCA DE -->
+      <div class="form-field full">
+        <label for="acerca">Acerca de <span class="req">*</span></label>
+        <textarea id="acerca" name="acerca" placeholder="Describe el alojamiento, su ambiente, qué lo hace especial..." required></textarea>
+        <small>Recomendado: 150–400 caracteres.</small>
+      </div>
+
+      <!-- LO QUE OFRECE -->
+      <div class="form-field full">
+        <label>Lo que ofrece</label>
+        <div class="amenities">
+          <label class="amenity"><input type="checkbox" name="amenidades" value="wifi"><span class="box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-11"/></svg></span><span>Wi-Fi</span></label>
+          <label class="amenity"><input type="checkbox" name="amenidades" value="estacionamiento"><span class="box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-11"/></svg></span><span>Estacionamiento</span></label>
+          <label class="amenity"><input type="checkbox" name="amenidades" value="chimenea"><span class="box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-11"/></svg></span><span>Chimenea</span></label>
+          <label class="amenity"><input type="checkbox" name="amenidades" value="cocina"><span class="box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-11"/></svg></span><span>Cocina equipada</span></label>
+          <label class="amenity"><input type="checkbox" name="amenidades" value="desayuno"><span class="box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-11"/></svg></span><span>Desayuno incluido</span></label>
+          <label class="amenity"><input type="checkbox" name="amenidades" value="mascotas"><span class="box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-11"/></svg></span><span>Pet friendly</span></label>
+          <label class="amenity"><input type="checkbox" name="amenidades" value="terraza"><span class="box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-11"/></svg></span><span>Terraza</span></label>
+          <label class="amenity"><input type="checkbox" name="amenidades" value="vista"><span class="box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-11"/></svg></span><span>Vista panorámica</span></label>
+          <label class="amenity"><input type="checkbox" name="amenidades" value="agua-caliente"><span class="box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-11"/></svg></span><span>Agua caliente</span></label>
+          <label class="amenity"><input type="checkbox" name="amenidades" value="tv"><span class="box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-11"/></svg></span><span>TV / Streaming</span></label>
+        </div>
+      </div>
+
+      <!-- UBICACIÓN -->
+      <div class="form-grid">
+        <div class="form-field full">
+          <label for="direccion">Dirección <span class="req">*</span></label>
+          <input id="direccion" name="direccion" type="text" placeholder="Ej: Camino al Mirador s/n" required>
+        </div>
+        <div class="form-field">
+          <label for="ciudad">Ciudad / Municipio</label>
+          <input id="ciudad" name="ciudad" type="text" placeholder="San José del Pacífico">
+        </div>
+        <div class="form-field">
+          <label for="estado">Estado</label>
+          <input id="estado" name="estado" type="text" placeholder="Oaxaca">
+        </div>
+        <div class="form-field">
+          <label for="latitud">Latitud</label>
+          <input id="latitud" name="latitud" type="text" placeholder="16.1765">
+        </div>
+        <div class="form-field">
+          <label for="longitud">Longitud</label>
+          <input id="longitud" name="longitud" type="text" placeholder="-96.6103">
+        </div>
+      </div>
+
+    </form>
+
+    <div class="modal-foot">
+      <button class="btn" type="button" data-close>Cancelar</button>
+      <button class="btn primary" type="submit" form="formAlojamiento">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-11"/></svg>
+        Guardar alojamiento
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  (function(){
+    const overlay = document.getElementById('modalAlojamiento');
+    const btnOpen = document.getElementById('btnNuevoAlojamiento');
+    const form = document.getElementById('formAlojamiento');
+    const uploadZone = document.getElementById('uploadZone');
+    const inputImgs = document.getElementById('inputImagenes');
+    const previewGrid = document.getElementById('previewGrid');
+
+    // Abrir modal
+    btnOpen.addEventListener('click', () => {
+      overlay.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    });
+
+    // Cerrar modal (botones y clic fuera)
+    overlay.querySelectorAll('[data-close]').forEach(el => {
+      el.addEventListener('click', closeModal);
+    });
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) closeModal();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && overlay.classList.contains('open')) closeModal();
+    });
+    function closeModal(){
+      overlay.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    // Abrir selector de archivos al hacer clic en la zona
+    uploadZone.addEventListener('click', () => inputImgs.click());
+
+    // Drag & drop
+    ['dragenter','dragover'].forEach(evt => {
+      uploadZone.addEventListener(evt, (e) => {
+        e.preventDefault();
+        uploadZone.classList.add('dragover');
+      });
+    });
+    ['dragleave','drop'].forEach(evt => {
+      uploadZone.addEventListener(evt, (e) => {
+        e.preventDefault();
+        uploadZone.classList.remove('dragover');
+      });
+    });
+    uploadZone.addEventListener('drop', (e) => {
+      const files = e.dataTransfer.files;
+      if (files.length) {
+        inputImgs.files = files;
+        renderPreview(files);
+      }
+    });
+
+    // Preview de imágenes
+    inputImgs.addEventListener('change', () => renderPreview(inputImgs.files));
+
+    function renderPreview(files){
+      previewGrid.innerHTML = '';
+      const max = 10;
+      Array.from(files).slice(0, max).forEach(file => {
+        if (!file.type.startsWith('image/')) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const div = document.createElement('div');
+          div.className = 'preview-item';
+          div.innerHTML = `
+            <img src="${e.target.result}" alt="${file.name}">
+            <button type="button" aria-label="Quitar">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
+                <path d="M6 6l12 12M18 6 6 18"/>
+              </svg>
+            </button>
+          `;
+          div.querySelector('button').addEventListener('click', () => div.remove());
+          previewGrid.appendChild(div);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    // Envío del formulario
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const data = new FormData(form);
+
+      // Mostrar en consola lo que se va a enviar (útil para probar)
+      console.log('=== Datos a enviar ===');
+      for (const [key, value] of data.entries()) {
+        if (value instanceof File) {
+          console.log(key, '→', value.name, `(${value.size} bytes)`);
+        } else {
+          console.log(key, '→', value);
+        }
+      }
+
+      // Aquí conectas con tu backend:
+      // fetch('api/alojamientos.php', { method:'POST', body: data })
+      //   .then(r => r.json())
+      //   .then(res => { /* cerrar, recargar lista, etc */ })
+      //   .catch(err => console.error(err));
+
+      alert('Formulario listo. Revisa la consola para ver los datos.');
+      // closeModal();
+      // form.reset();
+      // previewGrid.innerHTML = '';
+    });
+  })();
+</script>
+
+</body>
+</html>
